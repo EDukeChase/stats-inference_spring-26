@@ -1,0 +1,248 @@
+---
+format: revealjs
+self-contained: true
+---
+
+# Chapter 1
+
+MathStat Preliminaries
+
+## 1.1 Wait. Where are we going?
+
+## Exponential pdf
+
+If $X \sim \text{Exponential}(\lambda)$, then $X$ has the pdf
+$$
+f(x) = \lambda \exp(-\lambda x) I_{[0,\infty]}(x).
+$$
+
+## Exponential pdf visualized
+
+```{r}
+#| echo: false
+x <- seq(0, 4, len = 1001)
+plot(x, exp(-x), xlab = "x", ylab = "density", type = "l")
+```
+
+## Sample
+
+A sample of $n$ realization of $X$, denoted $X_1, X_2, \ldots, X_n$, can be used to approximate the distribution of $X$.
+
+## Histogram for 10 realizations
+
+```{r}
+#| fig-cap: A histogram of 10 realizations from an Exponential(15.2).
+set.seed(1)
+x <- seq(0, 3, len = 1000)
+hist(rexp(10, rate = 15.2), xlab = "x", probability = TRUE, main = "", ylim = c(0, 15.2))
+lines(x, dexp(x, rate = 15.2))
+```
+
+## Histogram for 1000 realizations
+
+```{r}
+#| fig-cap: A histogram of 1000 realizations from an Exponential(15.2).
+set.seed(2)
+hist(rexp(1000, rate = 15.2), xlab = "x", probability = TRUE, main = "", ylim = c(0, 15.2), breaks = 30)
+lines(x, dexp(x, rate = 15.2))
+```
+
+# 1.1.1 A very special trick
+
+## Approach
+
+We can avoid doing actual integration if we can manipulate the integrand to look more like a pdf, which must integrate to 1 of the range of the random variable.
+
+Example: Determine
+$$
+\int_0^{\infty} 3\exp(-2x)\,dx.
+$$
+
+## Special trick (cont)
+
+# 1.2 Transformations of Random Variables
+
+# 1.2.1 The discrete case and the binomial distribution
+
+## The binomial pmf
+
+$X \sim \text{Binomial}(n,p)$ has the pmf
+$$
+f(x) = P(X = x) = \binom{n}{x}p^x(1-p)^{n-x}I_{\{0,1,\ldots,n\}}(x).
+$$
+
+Determine the pmf of $Y:=n-X$.
+
+##
+
+##
+
+##
+
+# 1.2.2 The Continuous Case and the Gamma Distribution
+
+## Continous Transformation PDF
+
+Let $X$ be a continuous random variable with pdf $f_X(x)$.
+Let $Y = g(X)$, where $g$ is invertible and differentiable. Then the pdf for $Y$ is 
+$$
+f_Y(y) = f_X\left(g^{-1}(y)\right)\left|\frac{d}{dy}g^{-1}(y)\right|.
+$$
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Example 1.2.2
+
+A continuous random variable $X\sim\text{Gamma}(\alpha, \beta)$ has pdf
+$$
+f_X(x) = \frac{1}{\Gamma(\alpha)}\beta^\alpha x^{\alpha - 1}\exp(-\beta x)I_{(0,\infty)}(x).
+$$
+
+## Example 1.2.2 (cont)
+
+Let $Y:= cX$ with $c > 0$. Determine the pdf of $Y$. 
+
+## Example 1.2.2 (cont)
+
+
+## The shape parameter
+
+The $\alpha$ term is the "shape" parameter of the Gamma distribution.
+
+The kernel (non-constant) part of the pdf of the Gamma distribution is 
+$$
+x^{\alpha-1}\exp(-\beta x)I_{(0,\infty)}(x).
+$$
+
+## The shape parameter
+
+The exponential function part is an unscaled exponential density.
+
+- $\exp(-\beta x)$ dominates $x^{\alpha - 1}$ for large $x$.
+- For small $x$, the $x^{\alpha-1}$ term controls the shape.
+
+## Shape parameter visualized
+
+```{r}
+#| echo: false
+#| fig-cap: The $\alpha$ terms controls the shape of the Gamma distribution.
+par(mfrow = c(1, 2))
+x <- seq(0, 30, len = 101)
+plot(x, dgamma(x, shape = 1), type = "l", xlab = "x", ylab = "density", main = expression(paste(alpha, "=1, ", beta, "=1")))
+plot(x, dgamma(x, shape = 10), type = "l", xlab = "x", ylab = "density", main = expression(paste(alpha, "=10, ", beta, "=1")))
+par(mfrow = c(1, 1))
+```
+
+## The Gamma Function
+
+The pdf for the gamma distribution is defined using the **gamma function**, denoted by $\Gamma(\alpha)$.
+
+$$
+\Gamma(\alpha) = \int_0^{\infty} x^{\alpha - 1} \exp(-x)\, dx.
+$$
+
+## The Gamma Function (cont)
+
+## The Gamma Function (cont)
+
+## The Gamma Function (cont)
+
+# 1.3 Bivariate Transformations
+
+## Bivariate Transformation PDF
+
+Suppose the $X_1$ and $X_2$ are jointly continuous random variables with pdf $f_{X_1, X_2}(x_1, x_2)$. Let $Y_1 = g_1(X_1, X_2)$ and $Y_2 = g_2(X_1, X_2)$. For $h_1$ and $h_2$ differentiable, let 
+$$
+X_1 = h_1(Y_1, Y_2)\text{ and }X_2 = h_2(Y_1, Y_2).
+$$
+Then
+$$
+f_{Y_1, Y_2}(y_1, y_2) = f_{X_1, X_2}\left(h_1(y_1, y_2), h_2(y_1, y_2)\right)|J|,
+$$
+where $|J|$ is the absolute value of the Jacobian.
+
+## Bivariate transformation pdf continued
+
+The absolute value of the Jacobian is
+$$
+J = 
+\text{det}\left[
+\begin{matrix}
+\frac{\partial x_1}{\partial y_1} & \frac{\partial x_1}{\partial y_2} \\
+\frac{\partial x_2}{\partial y_1} & \frac{\partial x_2}{\partial y_2}
+\end{matrix}
+\right].
+$$
+
+## Example 1.3.1
+
+Let $X_1, X_2 \stackrel{i.i.d.}{\sim}\text{Gamma}(\alpha, \beta)$
+
+Determine the pdf of 
+$$
+Y = \frac{X_1}{X_1 + X_2}.
+$$
+
+## Example 1.3.1 (cont)
+
+## Example 1.3.1 (cont)
+
+## Example 1.3.1 (cont)
+
+## Example 1.3.1 (cont)
+
+## The Beta Distribution
+
+The continuous random variable $X\sim \text{Beta}(a,b)$ had pdf
+$$
+f(x) = \frac{1}{\mathcal{B}(a,b)}x^{a-1}(1-x)^{b-1}I_{(0,1)}(x),
+$$
+for $a,b>0$, where 
+
+$$
+\mathcal{B}(a,b)=\int_0^1x^{a-1}(1-x)^{b-1}\,dx
+$$
+denotes the **beta function**, which normalizes the kernel of the Beta distribution. 
+
+## The Beta Distribution (cont)
+
+The Beta distribution is a flexible distribution for modeling a random variable between 0 and 1.
+
+Note: The Uniform(0, 1) distribution is a special case of the Beta distribution with 
+
+## The Beta Distribution (cont)
+
+```{r}
+x <- seq(0, 1, len = 1001)
+par(mfrow = c(2, 3))
+plot(x, dbeta(x, 0.5, 0.5), ylab = "density", type = "l",
+     main = "a = 0.5, b = 0.5")
+plot(x, dbeta(x, 1, 1), ylab = "density", type = "l",
+     main = "a = 1, b = 1")
+plot(x, dbeta(x, 9, 3), ylab = "density", type = "l",
+     main = "a = 9, b = 3")
+plot(x, dbeta(x, 3, 9), ylab = "density", type = "l",
+     main = "a = 3, b = 9")
+plot(x, dbeta(x, 4, 4), ylab = "density", type = "l",
+     main = "a = 4, b = 4")
+plot(x, dbeta(x, 10, 200), ylab = "density", type = "l",
+     main = "a = 10, b = 200")
+par(mfrow = c(1, 1))
+```
+
+## The Beta Function
+
+$$
+\mathcal{B}(a, b) = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a + b)}.
+$$
+
+Proof:
+
+## The Beta Function (cont)
+
