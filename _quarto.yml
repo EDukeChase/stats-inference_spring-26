@@ -1,0 +1,8 @@
+project:
+  type: default
+
+format:
+  revealjs:
+    self-contained: true
+    width: 1200
+    height: 1116
