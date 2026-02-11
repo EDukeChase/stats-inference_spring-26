@@ -1,4 +1,4 @@
-name: Render Quarto (revealjs)
+name: Render Quarto HTML + PDFs (timestamped)
 
 on:
   workflow_dispatch:
@@ -15,25 +15,71 @@ jobs:
         with:
           r-version: "4.3"
 
+      - name: Install and cache R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::knitr
+            any::rmarkdown
+            any::ggplot2
+            any::dplyr
+            any::tidyr
+            any::readr
+            any::tibble
+            any::stringr
+            any::kableExtra
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Install R packages
-        run: |
-          Rscript -e 'install.packages(c(
-            "knitr","rmarkdown",
-            "ggplot2",
-            "dplyr","tidyr","readr",
-            "tibble",
-            "stringr",
-            "kableExtra"
-          ), repos="https://cloud.r-project.org")'
-
-      - name: Render
+      - name: Render HTML
         run: quarto render
 
-      - name: Upload rendered output
+      - name: Set up Node.js (for Decktape)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install system deps for headless Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libasound2t64 libpangocairo-1.0-0 libpango-1.0-0 \
+            libcairo2 libx11-6 libx11-xcb1 libxcb1 libxext6 libxshmfence1 \
+            fonts-liberation
+
+      - name: Convert Reveal.js HTML to PDF (Decktape)
+        run: |
+          shopt -s nullglob
+          for f in *.qmd; do
+            base="${f%.qmd}"
+            html="${base}.html"
+            pdf="${base}.pdf"
+            if [ -f "$html" ]; then
+              npx -y decktape reveal --size "1200x1116" "$html" "$pdf"
+            fi
+          done
+
+      - name: Rename outputs with commit + date
+        env:
+          TZ: America/Denver
+        run: |
+          HASH="$(git rev-parse --short HEAD)"
+          DATE="$(date +%F)"   # YYYY-MM-DD
+          shopt -s nullglob
+
+          for f in *.html *.pdf; do
+            base="${f%.*}"
+            ext="${f##*.}"
+            mv -v "$f" "${base}_${HASH}_${DATE}.${ext}"
+          done
+
+      - name: Upload outputs
         uses: actions/upload-artifact@v4
         with:
           name: rendered
-          path: .
+          path: |
+            *.html
+            *.pdf
