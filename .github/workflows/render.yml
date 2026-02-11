@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -32,15 +34,47 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render HTML
-        run: quarto render
+      - name: Render only changed qmd (from professor)
+        run: |
+          set -e
+          rm -rf out
+          mkdir -p out
+
+          # Identify professor commit for this run
+          if git rev-parse --verify -q HEAD^2 >/dev/null; then
+            PROF_COMMIT="HEAD^2"
+            BASE_COMMIT="$(git merge-base HEAD^1 HEAD^2)"
+          else
+            PROF_COMMIT="HEAD"
+            BASE_COMMIT="HEAD~1"
+          fi
+
+          # Find changed .qmd files between previous upstream state and professor commit
+          mapfile -t QMD_FILES < <(git diff --name-only "$BASE_COMMIT" "$PROF_COMMIT" -- '*.qmd')
+
+          # If none changed, skip the rest
+          if [ "${#QMD_FILES[@]}" -eq 0 ]; then
+            echo "No .qmd changes in professor update; skipping render."
+            exit 0
+          fi
+
+          # Render only those files into out/
+          for f in "${QMD_FILES[@]}"; do
+            echo "Rendering $f"
+            quarto render "$f" --output-dir out
+          done
+
+          # Flag that we rendered something
+          touch out/.rendered
 
       - name: Set up Node.js (for Decktape)
+        if: hashFiles('out/.rendered') != ''
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Install system deps for headless Chromium
+        if: hashFiles('out/.rendered') != ''
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -51,39 +85,43 @@ jobs:
             fonts-liberation
 
       - name: Convert Reveal.js HTML to PDF (Decktape)
+        if: hashFiles('out/.rendered') != ''
         run: |
           shopt -s nullglob
-          for f in *.qmd; do
-            base="${f%.qmd}"
-            html="${base}.html"
-            pdf="${base}.pdf"
-            if [ -f "$html" ]; then
-              npx -y decktape reveal \
-                --size "1200x1116" \
-                --chrome-arg=--no-sandbox \
-                --chrome-arg=--disable-setuid-sandbox \
-                "$html" "$pdf"
-            fi
+          for html in out/*.html; do
+            base="${html%.html}"
+            npx -y decktape reveal \
+              --size "1200x1116" \
+              --chrome-arg=--no-sandbox \
+              --chrome-arg=--disable-setuid-sandbox \
+              --chrome-arg=--disable-dev-shm-usage \
+              "$html" "${base}.pdf"
           done
 
-      - name: Rename outputs with commit + date
+      - name: Rename outputs with professor commit + date
+        if: hashFiles('out/.rendered') != ''
         env:
           TZ: America/Denver
         run: |
-          HASH="$(git rev-parse --short HEAD)"
-          DATE="$(date +%F)"   # YYYY-MM-DD
+          if git rev-parse --verify -q HEAD^2 >/dev/null; then
+            HASH="$(git rev-parse --short HEAD^2)"
+          else
+            HASH="$(git rev-parse --short HEAD)"
+          fi
+
+          DATE="$(date +%F)"
           shopt -s nullglob
 
-          for f in *.html *.pdf; do
-            base="${f%.*}"
-            ext="${f##*.}"
-            mv -v "$f" "${base}_${HASH}_${DATE}.${ext}"
+          for f in out/*.html out/*.pdf; do
+            base="$(basename "$f")"
+            stem="${base%.*}"
+            ext="${base##*.}"
+            mv -v "$f" "out/${stem}_${HASH}_${DATE}.${ext}"
           done
 
       - name: Upload outputs
+        if: hashFiles('out/.rendered') != ''
         uses: actions/upload-artifact@v4
         with:
           name: rendered
-          path: |
-            *.html
-            *.pdf
+          path: out/*.pdf
