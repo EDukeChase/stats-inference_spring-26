@@ -58,7 +58,11 @@ jobs:
             html="${base}.html"
             pdf="${base}.pdf"
             if [ -f "$html" ]; then
-              npx -y decktape reveal --size "1200x1116" "$html" "$pdf"
+              npx -y decktape reveal \
+                --size "1200x1116" \
+                --chrome-arg=--no-sandbox \
+                --chrome-arg=--disable-setuid-sandbox \
+                "$html" "$pdf"
             fi
           done
 
