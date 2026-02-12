@@ -650,7 +650,7 @@ $$
 
 For an i.i.d. sample of continuous random variables $X_1, X_2, \ldots, X_n$ with cdf $F$, the pdf of $X_{(i)}$ is
 $$
-f_{X_{(i)}}(x) = \frac{n!}{(i-1)!(n-i)!}F(x)^{i-1}(1-F(x))^{n-k}f(x).
+f_{X_{(i)}}(x) = \frac{n!}{(i-1)!(n-i)!}F(x)^{i-1}(1-F(x))^{n-i}f(x).
 $$
 
 ## Proof
