@@ -2,7 +2,6 @@ name: Render Quarto HTML + PDFs (timestamped)
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   render:
