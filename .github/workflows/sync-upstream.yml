@@ -3,7 +3,7 @@ name: Sync from upstream
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"  # every 10 minutes
+    - cron: "*/30 * * * *"  # every 30 minutes (reduce spam)
 
 permissions:
   contents: write
@@ -12,10 +12,15 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync fork
+      - name: Checkout repo (required)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync fork with upstream
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
-          upstream_repository: jfrench/mathstats
-          upstream_branch: main
-          target_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_repo: jfrench/mathstats
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
