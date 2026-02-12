@@ -6,7 +6,7 @@ self-contained: true
 # Chapter 2
 
 ::: {style="font-size: 200%;"}
-Qualities of Esimators: Defining Good, Better, and Best
+Qualities of Estimators: Defining Good, Better, and Best
 :::
 
 ## Estimation
@@ -135,7 +135,9 @@ $$
 
 # 2.2
 
+::: {style="font-size: 200%;"}
 Mean Squared Error and Bias
+:::
 
 ## Definition 2.2.1 (Bias)
 
@@ -275,11 +277,46 @@ $$
 Chebyshev's Inequality
 :::
 
+## Chebyshev's (Tchebychev's) Inequality
+
+Let $X$ be a random variable with mean $\mu$ and variance $\sigma^2<\infty$. For any $k>0$,
+$$
+P(|X-\mu|<k\sigma)\geq 1 - \frac{1}{k^2}.
+$$
+
+Equivalently, 
+$$
+P(|X-\mu|\geq k\sigma) \leq 1 - \frac{1}{k^2}.
+$$
+
+## Proof
+
 # 2.3.3
 
 ::: {style="font-size: 200%;"}
 The Sample Mean and Convergence in Probability
 :::
+
+## The Weak Law of Large Numbers (WLLN)
+
+Let $X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}F$ with mean $\mu$ and variance $\sigma^2 <\infty$. Then
+$$
+\bar{X}\stackrel{P}{\to}\mu.
+$$
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Example 2.3.1
+
+Let $X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}\text{Exponential}(\lambda)$.  What does this tell us about $\bar{X}$?
+
+## Example 2.3.2
+
+Let $X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}\text{Gamma}(\alpha, \beta)$.  What does this tell us about $\bar{X}$?
 
 # 2.3.4
 
@@ -287,11 +324,127 @@ The Sample Mean and Convergence in Probability
 Consistent Estimators
 :::
 
+## Definition 2.3.2 (Consistent)
+
+Let $\hat{\theta}_n$ be a consistent estimator of $\theta$. Then $\hat{\theta}_n$ is a **consistent estimator** of $\theta$ if 
+$$
+\hat{\theta}_n \stackrel{P}{\to}\theta.
+$$
+
+A question about the consistency of an estimator is related to convergence in probability.
+
+## Theorem 2.3.1
+
+An unbiased estimator $\hat{\theta}_n$ of $\theta$ is a consitent estimator of $\theta$ if 
+$$
+\lim_{n\to\infty} \text{var}(\hat{\theta}_n) = 0.
+$$
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Definition 2.3.3 (Asymptotically unbiased)
+
+$\hat{\theta}_n$ is an **asymptotically unbiased** estimator of $\theta$ if
+$$
+\lim_{n\to\infty}E(\hat{\theta}_n)=\theta.
+$$
+
+## Theorem 2.3.2 
+An asymptotically unbiased estimator $\hat{\theta}_n$ of $\theta$ is a consistent estimator of $\theta$ if
+$$
+\lim_{n\to\infty}\text{var}(\hat{\theta}_n)=0
+$$
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Theorem
+
+An estimator $\hat{\theta}_n$ of $\theta$ is a consistent estimator of $\theta$ if
+$$
+\lim_{n\to\infty}\text{MSE}(\hat{\theta}_n)=0
+$$
+
+## Proof
+
+## Example 2.3.3
+
+Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim}\text{Uniform}(0, \theta)$. Show that $X_{(n)}\stackrel{P}{\to} \theta$.
+
+## Example 2.3.3 (cont)
+
+## Example 2.3.3 (cont)
+
+## Example 2.3.3 (cont)
+
+## Example 2.3.3 (cont)
+
+## Example 2.3.3 (cont)
+
 # 2.3.5
 
 ::: {style="font-size: 200%;"}
-Things About Convergence in Probability That Will Not Suprise You
+Things About Convergence in Probability That Will Not Surprise You
 :::
+
+## Theorem 2.3.3
+
+Suppose that $\{X_n\}$ and $\{Y_n\}$ are sequences of random variables such that $X_n\stackrel{P}{\to}(X)$ and $Y_n\stackrel{P}{\to}(Y)$ for some random variables $X$ and $Y$.
+Then
+
+1. $X_n+Y_n\stackrel{P}{\to} X+Y$.
+2. $X_n Y_n \stackrel{P}{\to} XY$.
+
+## Theorem 2.3.3 (cont)
+
+3. $X_n/Y_n\stackrel{P}{\to} X/Y$ as long as the denominators are non-zero with probability 1.
+4. Continuous Mapping Theorem: For any continuous function $g$, 
+$$
+g(X_n) \stackrel{P}{\to} g(X).
+$$
+
+## Proof 
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Example 2.3.4
+
+Suppose the $X_n\stackrel{P}{\to} b$ and $a$ is a constant. Does $aX_n$ converge?
+
+## Example 2.3.4 (cont)
+
+## Example 2.3.5
+
+Let $\{a_n\}$ be a sequence of real number such that
+$$
+\lim_{n\to\infty} a_n = a.
+$$
+Show that $a_n \stackrel{P}{\to} a$.
+
+## Example 2.3.5 (cont)
+
+## Example 2.3.6
+
+Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim} \text{Uniform}(0,\theta)$. Use Theorem 2.3.1 to show that $X_n\stackrel{P}{\to}\theta$.
+
+## Example 2.3.6 (cont)
+
+## Example 2.3.6 (cont)
 
 # 2.4
 
