@@ -239,7 +239,7 @@ We write $X_n\stackrel{P}{\to}X$.
 ## Convergence in probability notes
 
 1. Probabilities are numbers, so the limits are for a sequence of numbers.
-2. A constant is a (boring) random variable, so you can have convergence in probability a number.
+2. A constant is a (boring) random variable, so you can have convergence in probability to a number.
 3. In practice, we want to know if $\hat{\theta}_n \stackrel{P}{\to}\theta$.
 4. The inequalities can include equals without problems, i.e., $>$ or $\geq$, $<$ or $\leq$.
 
@@ -286,7 +286,7 @@ $$
 
 Equivalently, 
 $$
-P(|X-\mu|\geq k\sigma) \leq 1 - \frac{1}{k^2}.
+P(|X-\mu|\geq k\sigma) \leq \frac{1}{k^2}.
 $$
 
 ## Proof
@@ -335,7 +335,7 @@ A question about the consistency of an estimator is related to convergence in pr
 
 ## Theorem 2.3.1
 
-An unbiased estimator $\hat{\theta}_n$ of $\theta$ is a consitent estimator of $\theta$ if 
+An unbiased estimator $\hat{\theta}_n$ of $\theta$ is a consistent estimator of $\theta$ if 
 $$
 \lim_{n\to\infty} \text{var}(\hat{\theta}_n) = 0.
 $$
@@ -452,11 +452,86 @@ Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim} \text{Uniform}(0,\theta)$. Use T
 Convergence in Distribution
 :::
 
+## Definition 2.4.1 (Convergence in Distribution)
+
+Let $\{X_n\}$ be a sequence of random variables with dfs $F_n(x)=P(X_n \leq X)$. Let $X$ be a random variables with cdf $F(X)$.
+
+$X_n$ **converges in distribution** to $X$ if
+$$
+\lim{n\to\infty} F_n(x) = F(x),
+$$
+for all $X$ where $F$ is continuous.
+
+We denote this property as $X_n \stackrel{d}{\to}X$.
+
+## Convergence in Distribution
+
+The convergence in distribution of $X_n$ to $X$ may also be denoted as $X_n \stackrel{D}{\to}X$.
+
+**Convergence in distribution** is sometimes called **convergence in law** and denoted $X_n \stackrel{L}{\to} X$.
+
+## Example 2.4.1
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim}\text{Pareto}(1)$. Define $Y_n = nX_{(1)}$. The cdf of $Y_n$ converges to what distribution?
+
+## Example 2.4.1 (cont)
+
+## Example 2.4.1 (cont)
+
+## Example 2.4.1 (cont)
+
+## Example 2.4.2
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim}\text{Uniform}(0,1)$. Consider $Y_n = X_{(n)}$. The cdf of $Y_n$ converges to what?
+
+## Example 2.4.2 (cont)
+
+## Example 2.4.2 (cont)
+
+## Example 2.4.2 (cont)
+
+## Notes
+
+CDFs are always right-continuous functions.
+
+Convergence in distribution only must be done where $F(x)$ is continuous.  
+
 # 2.4.1
 
 ::: {style="font-size: 200%;"}
 Convergence in Probability is Stronger
 :::
+
+## Theorem 2.4.1
+
+$X_n \stackrel{P}{\to}X \Rightarrow X_n \stackrel{d}{\to}X$.
+
+## Proof 
+
+## Proof (cont)
+
+## Proof (cont)
+
+
+## Example 2.4.4
+
+$X_n \stackrel{P}{\to}X \not\Rightarrow X_n \stackrel{d}{\to}X$.
+
+## Example 2.4.4 (cont)
+
+## Example 2.4.4 (cont)
+
+## Example 2.4.4 (cont)
+
+## Theorem 2.4.2
+
+Suppose that $X_n \stackrel{d}{\to} c$ where $c\in \mathbb{R}$. Then $X_n \stackrel{P}{\to} c$.
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
 
 # 2.4.2
 
@@ -464,12 +539,108 @@ Convergence in Probability is Stronger
 The Continuous Mapping Theorem
 :::
 
+## The Continuous Mapping Theorem
+
+Suppose that $X_n \stackrel{d}{\to} X$ and $g$ is a continuous function. Then
+$$
+g(X_n) \stackrel{d}{\to} g(X).
+$$
+
+The proof is omitted because it is long.
+
+## Example 2.4.4
+
+Let $X,X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}N(\mu,\sigma^2)$. Then $X_n\stackrel{d}{\to}X$. 
+
+This is why convergence in distribution is weak.
+
+## Example 2.4.4 (cont)
+
+## Example 2.4.4 (cont)
+
+## Unexpected property
+
+Even if $X_n\stackrel{d}{\to}X$ and $Y_n\stackrel{d}{\to}Y$, it is **not necessarily true** that $X_n + Y_n \stackrel{d}{\to}X + Y$.
+
+## Example 2.4.5
+
+Suppose that $X,X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}N(\mu,\sigma^2)$ and $Y_n:=-X_n$. To what does $X_n + Y_n$ converge in distribution?
+
+## Example 2.4.5 (cont)
+
+## Example 2.4.5 (cont)
+
+## Example 2.4.5 (cont)
+
 # 2.4.3
 
 ::: {style="font-size: 200%;"}
 Slutsky's Theorem: Mixing Convergence Types
 :::
 
-# 2.3.2
+## Slutsky's Theorem
+
+Suppose that $X_n \stackrel{P}{\to} a$, where $a\in\mathbb{R}$ and $Y_n \stackrel{d}{\to} Y$. Then
+
+1. $X_n + Y_n \stackrel{d}{\to} a + Y$.
+2. $X_n Y_n \stackrel{d}{\to} a Y$.
+3. $Y_n/X_n \stackrel{d}{\to} Y/a$ if $a\neq 0$.
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Example 2.4.6
+
+Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim}\text{Pareto}(1)$. We know from Example 2.4.1 that $Y_n:= nX_{(1)}\stackrel{d}{\to}Y$ where $Y\sim\text{Exponential}(1)$. To what does $X_{(1)}$ converge in distribution?
+
+## Example 2.4.6 (cont)
+
+## Example 2.4.6 (cont)
+
+# 2.4.4
+
+::: {style="font-size: 200%;"}
+Convergence in Distribution and Moment Generating Functions
+:::
+
+## Theorem 2.4.3
+
+Let $X_1, X_2, \ldots, X_n$ be a sequence of random variables. Let $F_n(x)$ be the cdf of $X_n$ and $M_n(t)$ be the mgf of $X_n$. Let $X$ be a random variable with cdf $F(x)$ and mgf $M(t)$.
+
+Then
+$$
+\lim_{n\to\infty} M_n(t) = M(t)\Rightarrow \lim_{n\rightarrow \infty} F_n(x) = F(x).
+$$
+
+i.e., if $\lim_{n\to\infty} M_n(t) = M(t)$ then $X_n \stackrel{d}{\to} X$.
+
+## Notes
+
+1. The first limit for the mgf in Theorem 2.4.3 only needs to hold in some open interval containing zero.
+
+2. The result would be if and only if (go both directions) if the mgf always existed (it might diverge to infinity).
+
+## Example 2.4.7
+
+Let $X_1,X_2,\ldots$ be a sequence of independent random variables with
+$$
+X_n \sim \text{Binomial}(n, \lambda/p).
+$$
+To what does $X_n$ converge in distribution?
+
+## Example 2.4.7 (cont)
+
+## Example 2.4.7 (cont)
+
+## Example 2.4.7 (cont)
+
+## Example 2.4.7 (cont)
 
 
