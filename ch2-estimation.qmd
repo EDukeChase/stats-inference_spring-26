@@ -396,7 +396,7 @@ Things About Convergence in Probability That Will Not Surprise You
 
 ## Theorem 2.3.3
 
-Suppose that $\{X_n\}$ and $\{Y_n\}$ are sequences of random variables such that $X_n\stackrel{P}{\to}(X)$ and $Y_n\stackrel{P}{\to}(Y)$ for some random variables $X$ and $Y$.
+Suppose that $\{X_n\}$ and $\{Y_n\}$ are sequences of random variables such that $X_n\stackrel{P}{\to} X$ and $Y_n\stackrel{P}{\to} Y$ for some random variables $X$ and $Y$.
 Then
 
 1. $X_n+Y_n\stackrel{P}{\to} X+Y$.
@@ -440,7 +440,7 @@ Show that $a_n \stackrel{P}{\to} a$.
 
 ## Example 2.3.6
 
-Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim} \text{Uniform}(0,\theta)$. Use Theorem 2.3.1 to show that $X_n\stackrel{P}{\to}\theta$.
+Let $X_1,X_2,\ldots,X_n \stackrel{i.i.d.}{\sim} \text{Uniform}(0,\theta)$. Use Theorem 2.3.1 to show that $X_{(n)}\stackrel{P}{\to}\theta$.
 
 ## Example 2.3.6 (cont)
 
@@ -454,11 +454,11 @@ Convergence in Distribution
 
 ## Definition 2.4.1 (Convergence in Distribution)
 
-Let $\{X_n\}$ be a sequence of random variables with dfs $F_n(x)=P(X_n \leq X)$. Let $X$ be a random variables with cdf $F(X)$.
+Let $\{X_n\}$ be a sequence of random variables with cdfs $F_n(x)=P(X_n \leq X)$. Let $X$ be a random variable with cdf $F(X)$.
 
 $X_n$ **converges in distribution** to $X$ if
 $$
-\lim{n\to\infty} F_n(x) = F(x),
+\lim_{n\to\infty} F_n(x) = F(x),
 $$
 for all $X$ where $F$ is continuous.
 
@@ -564,7 +564,7 @@ Even if $X_n\stackrel{d}{\to}X$ and $Y_n\stackrel{d}{\to}Y$, it is **not necessa
 
 ## Example 2.4.5
 
-Suppose that $X,X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}N(\mu,\sigma^2)$ and $Y_n:=-X_n$. To what does $X_n + Y_n$ converge in distribution?
+Suppose that $X,X_1,X_2,\ldots,X_n\stackrel{i.i.d.}{\sim}N(0, 1)$ and $Y_n:=-X_n$. To what does $X_n + Y_n$ converge in distribution?
 
 ## Example 2.4.5 (cont)
 
@@ -643,4 +643,221 @@ To what does $X_n$ converge in distribution?
 
 ## Example 2.4.7 (cont)
 
+# 2.5
 
+::: {style="font-size: 200%;"}
+The Central Limit Theorem
+:::
+
+## The Central Limit Theorem (CLT)
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2 < \infty$. Define
+$$
+Z_n = \frac{\bar{X}-\mu}{\sigma/\sqrt{n}}.
+$$
+Then as $n\to\infty$, $Z_n \stackrel{d}{\to} Z$ where $Z\sim N(0, 1)$.
+
+## Notes about the CLT
+
+1. The CLT requires a finite variance.
+2. Our proof will assume the mgf exists, which isn't always satisfied by distributions with finite variance.
+3. The proof can be completed more generally using characteristic functions, which always exist (and are an extension of mgfs involving imaginary numbers).
+
+# 2.5.1
+
+::: {style="font-size: 200%;"}
+Proof of the Central Limit Theorem
+:::
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+# 2.5.2
+
+::: {style="font-size: 200%;"}
+Asymptotic Normality
+:::
+
+## Definition 2.5.1 (Asymptotically Normal)
+
+$X_n$ has an **asymptotically normal** distribution with mean $\mu_n$ and variance $\sigma_n^2$ if 
+$$
+\frac{X_n - \mu_n}{\sigma_n} \stackrel{d}{\to} N(0, 1).
+$$
+
+## Notation 
+
+If $X_n$ has an **asymptotically normal** distribution with mean $\mu_n$ and variance $\sigma_n^2$, we will write
+$$
+X_n \stackrel{asymp}{\sim}N(\mu_n, \sigma_n^2).
+$$
+
+Note: It is not correct to write $X_n \stackrel{d}{\to} N(\mu_n, \sigma_n^2)$ since the first part implies that $n\to\infty$, so there shouldn't be any $n$s on the right side of the arrow.
+
+## Example 2.4.1
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2<\infty$. What can we say about the asymptotic distribution of $\bar{X}$?
+
+## Example 2.4.2
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2<\infty$. What can we say about the asymptotic distribution of $\sum_{i=1}^n X_i$?
+
+# 2.5.3
+
+::: {style="font-size: 200%;"}
+Computing Probabilities for the Normal Distribution
+:::
+
+## Integration difficulties
+
+If $X\sim N(\mu, \sigma^2)$, then
+$$
+f(x; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{1}{2\sigma^2}(x-\mu)^2\right).
+$$
+
+Proving that $f(x;\mu, \sigma^2)$ integrates to 1 requires the use of polar coordinates.
+
+Computing $F(x;\mu,\sigma^2) = \int_{-\infty}^x f_X(s; \mu, \sigma^2)\,ds$ requires numerical evaluation.
+
+## Z-tables
+
+Let $Z\sim N(0, 1)$.
+
+The cdf of $Z$ is defined as 
+$$
+F(z) = P(Z\leq z) = \Phi(z).
+$$
+
+$\Phi(z)$ can be evaluated easily in calculators or statistical software.
+
+E.g., here is how we evaluate $\Phi(1)$ in R:
+```{r}
+#| echo: true
+pnorm(1)
+```
+
+## Relating $Z$ to $N(\mu, \sigma^2)$
+
+If $X\sim N(\mu, \sigma^2)$, then
+$$
+Z:= \frac{X-\mu}{\sigma} \sim N(0, 1).
+$$
+
+Similarly, if $Z\sim N(0, 1)$, then
+$$
+X:= \mu + \sigma Z \sim N(\mu, \sigma^2).
+$$
+
+## Computing a probability
+
+Let $X\sim N(1, 2)$.
+
+\begin{align}
+P(X\leq 2.3) &= P\left(\frac{X-1}{\sqrt{2}}\leq \frac{2.3-1}{\sqrt{2}}\right)\\
+&= P(Z\leq 0.92)\\
+&= \Phi(0.9192)\\
+&= 0.8210.
+\end{align}
+
+```{r}
+#| echo: true
+pnorm((2.3-1)/sqrt(2))
+```
+
+# 2.5.4
+
+::: {style="font-size: 200%;"}
+A Numerical Example for the CLT
+:::
+
+## CLT numerical example
+
+Let $\bar{X}$ denote the sample mean of a random sample of size 100 from the $\chi^2(50)$ distribution.
+
+Estimate $P(49 < \bar{X} < 51)$.
+
+## CLT numerical example (cont)
+
+## CLT numerical example (cont)
+
+# 2.5.5
+
+::: {style="font-size: 200%;"}
+The Delta Method
+:::
+
+## Delta Method introduction
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2 < \infty$. 
+
+By the WLLN, we know that $\bar{X} \stackrel{P}{\to} \mu$.
+
+That implies that $\bar{X} \stackrel{d}{\to} \mu$
+
+By the Continuous Mapping Theorem (CMT), we can say that $\bar{X}^2 \stackrel{d}{\to} \mu^2$
+
+What can we say about the asymptotic distribution of $\bar{X}^2$?
+
+## More information
+
+The CLT says that
+$$
+\frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \stackrel{d}{\to} N(0, 1).
+$$
+
+Thus, $\bar{X} \stackrel{asymp}{\sim}N(\mu, \sigma^2/n)$.
+
+Can we say $\bar{X}^2 \stackrel{asymp}{\sim}N(a_n, b_n)$ for some $\{a_n\}$ and $\{b_n\}$?
+
+## The Delta Method
+
+Suppose that we have a sequence of estimators $\hat{\theta}_n$ for $\theta$ such that
+$$
+\sqrt{n}(\hat{\theta}-\theta)\stackrel{d}{\to}N(0, \sigma^2).
+$$
+If $g:\mathbb{R}\to\mathbb{R}$ is continuously differentiable\footnote{The derivative is also continuous} in a neighborhod of $\theta$, then
+$$
+\sqrt{n}(g(\hat{\theta}_n)-g(\theta))\stackrel{d}{\to}N(0, \sigma^2[g^{'}(\theta)]^2).
+$$
+
+## Proof
+
+## Proof (cont)
+
+## Proof (cont)
+
+## Proof (cont)
+
+# Example 2.5.3
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2 < \infty$. Determine the asymptotic distribution of $\bar{X}^2$.
+
+## Example 2.5.3 (cont)
+
+## Example 2.5.3 (cont)
+
+# 2.6
+
+::: {style="font-size: 200%;"}
+The Sample Variance
+:::
+
+## The Sample Variance
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim} F$ with mean $\mu$ and variance $\sigma^2 < \infty$.
+
+The **sample variance** of $\{X_1, X_2, \ldots, X_n\}$ is $$
+S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i - \bar{X})^2.
+$$
+
+
+## Facts about the sample variance
+
+- $E(S^2) = \sigma^2$.
+- $\text{var}(S^2) = \frac{1}{n}E[(X-\mu)^2]-\frac{(\sigma^2)^2(n-3)}{n(n-1)}$.
+- If $E[(X-\mu)^4]<\infty$, then $S^2 \stackrel{P}{\to} \sigma^2$. 
