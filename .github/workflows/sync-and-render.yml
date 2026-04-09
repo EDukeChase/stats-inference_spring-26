@@ -63,7 +63,7 @@ jobs:
 
   render:
     needs: sync
-    if: needs.sync.outputs.changed == 'true'
+    if: always() && needs.sync.result != 'failure'
     runs-on: ubuntu-latest
     env:
       COMMIT_HASH: ${{ needs.sync.outputs.commit_hash }}
