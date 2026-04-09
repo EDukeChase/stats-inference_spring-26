@@ -76,7 +76,7 @@ jobs:
       - name: Find changed .qmd files
         id: changed
         run: |
-          mapfile -t QMD_FILES < <(git diff --name-only HEAD~1 HEAD -- '*.qmd')
+          mapfile -t QMD_FILES < <(git ls-files '*.qmd')
           if [ "${#QMD_FILES[@]}" -eq 0 ]; then
             echo "No .qmd changes; skipping render."
             echo "any=false" >> "$GITHUB_OUTPUT"
