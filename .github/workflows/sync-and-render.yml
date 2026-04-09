@@ -63,11 +63,8 @@ jobs:
 
   render:
     needs: sync
-    if: always() && needs.sync.result != 'failure'
+    if: needs.sync.outputs.changed == 'true'
     runs-on: ubuntu-latest
-    env:
-      COMMIT_HASH: ${{ needs.sync.outputs.commit_hash }}
-      COMMIT_DATE: ${{ needs.sync.outputs.commit_date }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,7 +73,7 @@ jobs:
       - name: Find changed .qmd files
         id: changed
         run: |
-          mapfile -t QMD_FILES < <(git ls-files '*.qmd')
+          mapfile -t QMD_FILES < <(git diff --name-only HEAD~1 HEAD -- '*.qmd')
           if [ "${#QMD_FILES[@]}" -eq 0 ]; then
             echo "No .qmd changes; skipping render."
             echo "any=false" >> "$GITHUB_OUTPUT"
@@ -161,7 +158,7 @@ jobs:
             base="$(basename "$f")"
             stem="${base%.*}"
             ext="${base##*.}"
-            mv -v "$f" "out/${stem}_${COMMIT_DATE}_${COMMIT_HASH}.${ext}"
+            mv -v "$f" "out/${stem}_$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)_$(git rev-parse --short HEAD).${ext}"
           done
 
       - name: Commit PDFs to repo
@@ -172,12 +169,12 @@ jobs:
           mkdir -p pdfs
           cp out/*.pdf pdfs/
           git add pdfs/
-          git commit -m "render: ${{ env.COMMIT_DATE }} ${{ env.COMMIT_HASH }}"
+          git commit -m "render: $(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD) $(git rev-parse --short HEAD)"
           git push
 
       - name: Upload PDFs as artifact
         if: steps.changed.outputs.any == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: rendered_${{ env.COMMIT_DATE }}_${{ env.COMMIT_HASH }}
+          name: rendered_$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)_$(git rev-parse --short HEAD)
           path: out/*.pdf
