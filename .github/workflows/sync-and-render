@@ -1,0 +1,183 @@
+name: Sync and Render
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"    # sync check every 2 hours
+    - cron: "0 12 */5 * *"   # cache warm every 5 days
+
+permissions:
+  contents: write
+
+jobs:
+  warm-cache:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 12 */5 * *')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.3"
+      - name: Restore R package cache
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::knitr
+            any::rmarkdown
+            any::ggplot2
+            any::dplyr
+            any::tidyr
+            any::readr
+            any::tibble
+            any::stringr
+            any::kableExtra
+
+  sync:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 */2 * * *')
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.sync.outputs.has_new_commits }}
+      commit_hash: ${{ steps.meta.outputs.hash }}
+      commit_date: ${{ steps.meta.outputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync fork with upstream
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: jfrench/mathstats
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Capture commit metadata
+        id: meta
+        if: steps.sync.outputs.has_new_commits == 'true'
+        run: |
+          echo "hash=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "date=$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)" >> "$GITHUB_OUTPUT"
+
+  render:
+    needs: sync
+    if: needs.sync.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_HASH: ${{ needs.sync.outputs.commit_hash }}
+      COMMIT_DATE: ${{ needs.sync.outputs.commit_date }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find changed .qmd files
+        id: changed
+        run: |
+          mapfile -t QMD_FILES < <(git diff --name-only HEAD~1 HEAD -- '*.qmd')
+          if [ "${#QMD_FILES[@]}" -eq 0 ]; then
+            echo "No .qmd changes; skipping render."
+            echo "any=false" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "${QMD_FILES[@]}"
+            echo "any=true" >> "$GITHUB_OUTPUT"
+            jq -nR '[inputs]' <<< "$(printf '%s\n' "${QMD_FILES[@]}")" > /tmp/changed_qmds.json
+          fi
+
+      - name: Set up R
+        if: steps.changed.outputs.any == 'true'
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.3"
+
+      - name: Install and cache R packages
+        if: steps.changed.outputs.any == 'true'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::knitr
+            any::rmarkdown
+            any::ggplot2
+            any::dplyr
+            any::tidyr
+            any::readr
+            any::tibble
+            any::stringr
+            any::kableExtra
+
+      - name: Set up Quarto
+        if: steps.changed.outputs.any == 'true'
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render changed .qmd files
+        if: steps.changed.outputs.any == 'true'
+        run: |
+          set -e
+          rm -rf out && mkdir -p out
+          mapfile -t QMD_FILES < <(jq -r '.[]' /tmp/changed_qmds.json)
+          for f in "${QMD_FILES[@]}"; do
+            echo "Rendering $f"
+            quarto render "$f" --output-dir out
+          done
+
+      - name: Set up Node.js for Decktape
+        if: steps.changed.outputs.any == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install headless Chromium dependencies
+        if: steps.changed.outputs.any == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libasound2t64 libpangocairo-1.0-0 libpango-1.0-0 \
+            libcairo2 libx11-6 libx11-xcb1 libxcb1 libxext6 libxshmfence1 \
+            fonts-liberation
+
+      - name: Convert Reveal.js HTML to PDF via Decktape
+        if: steps.changed.outputs.any == 'true'
+        run: |
+          shopt -s nullglob
+          for html in out/*.html; do
+            base="${html%.html}"
+            npx -y decktape reveal \
+              --size "1200x1116" \
+              --chrome-arg=--no-sandbox \
+              --chrome-arg=--disable-setuid-sandbox \
+              --chrome-arg=--disable-dev-shm-usage \
+              "$html" "${base}.pdf"
+          done
+
+      - name: Rename outputs with date and hash
+        if: steps.changed.outputs.any == 'true'
+        run: |
+          shopt -s nullglob
+          for f in out/*.html out/*.pdf; do
+            base="$(basename "$f")"
+            stem="${base%.*}"
+            ext="${base##*.}"
+            mv -v "$f" "out/${stem}_${COMMIT_DATE}_${COMMIT_HASH}.${ext}"
+          done
+
+      - name: Commit PDFs to repo
+        if: steps.changed.outputs.any == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p pdfs
+          cp out/*.pdf pdfs/
+          git add pdfs/
+          git commit -m "render: ${{ env.COMMIT_DATE }} ${{ env.COMMIT_HASH }}"
+          git push
+
+      - name: Upload PDFs as artifact
+        if: steps.changed.outputs.any == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered_${{ env.COMMIT_DATE }}_${{ env.COMMIT_HASH }}
+          path: out/*.pdf
