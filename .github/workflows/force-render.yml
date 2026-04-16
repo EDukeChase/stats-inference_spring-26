@@ -1,78 +1,25 @@
-name: Sync and Render
+name: Force Render All
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 */2 * * *"    # sync check every 2 hours
-    - cron: "0 12 */5 * *"   # cache warm every 5 days
 
 permissions:
   contents: write
 
 jobs:
-  warm-cache:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 12 */5 * *')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: "4.3"
-      - name: Restore R package cache
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::knitr
-            any::rmarkdown
-            any::ggplot2
-            any::dplyr
-            any::tidyr
-            any::readr
-            any::tibble
-            any::stringr
-            any::kableExtra
-
-  sync:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 */2 * * *')
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.sync.outputs.has_new_commits }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Sync fork with upstream
-        id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-        with:
-          upstream_sync_repo: jfrench/mathstats
-          upstream_sync_branch: main
-          target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-
   render:
-    needs: sync
-    if: needs.sync.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Find changed .qmd files
+      - name: Find all .qmd files
         id: changed
         run: |
-          git fetch origin main
-          PREV=$(git rev-parse HEAD~1)
-          # Walk back past any bot commits to find the last non-bot commit
-          while git log -1 --format=%an "$PREV" | grep -q "github-actions"; do
-            PREV=$(git rev-parse "$PREV~1")
-          done
-          mapfile -t QMD_FILES < <(git diff --name-only "$PREV" HEAD -- '*.qmd')
+          mapfile -t QMD_FILES < <(git ls-files '*.qmd')
           if [ "${#QMD_FILES[@]}" -eq 0 ]; then
-            echo "No .qmd changes; skipping render."
+            echo "No .qmd files found."
             echo "any=false" >> "$GITHUB_OUTPUT"
           else
             printf '%s\n' "${QMD_FILES[@]}"
@@ -105,7 +52,7 @@ jobs:
         if: steps.changed.outputs.any == 'true'
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render changed .qmd files
+      - name: Render all .qmd files
         if: steps.changed.outputs.any == 'true'
         run: |
           set -e
@@ -166,9 +113,9 @@ jobs:
           mkdir -p pdfs
           cp out/*.pdf pdfs/
           git add pdfs/
-          git commit -m "render: $(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD) $(git rev-parse --short HEAD)"
+          git commit -m "force-render: $(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD) $(git rev-parse --short HEAD)"
           git push
-       
+
       - name: Upload PDFs to Dropbox
         if: steps.changed.outputs.any == 'true'
         env:
@@ -187,5 +134,5 @@ jobs:
         if: steps.changed.outputs.any == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: rendered_$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)_$(git rev-parse --short HEAD)
+          name: force-rendered_$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)_$(git rev-parse --short HEAD)
           path: out/*.pdf
