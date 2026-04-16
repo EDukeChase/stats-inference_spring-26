@@ -162,6 +162,20 @@ jobs:
           git add pdfs/
           git commit -m "render: $(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD) $(git rev-parse --short HEAD)"
           git push
+       
+      - name: Upload PDFs to Dropbox
+        if: steps.changed.outputs.any == 'true'
+        env:
+          DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
+        run: |
+          for pdf in out/*.pdf; do
+            filename="$(basename "$pdf")"
+            curl -X POST https://content.dropboxapi.com/2/files/upload \
+              --header "Authorization: Bearer $DROPBOX_TOKEN" \
+              --header "Dropbox-API-Arg: {\"path\": \"/mathstats-slides/${filename}\", \"mode\": \"overwrite\"}" \
+              --header "Content-Type: application/octet-stream" \
+              --data-binary "@$pdf"
+          done
 
       - name: Upload PDFs as artifact
         if: steps.changed.outputs.any == 'true'
