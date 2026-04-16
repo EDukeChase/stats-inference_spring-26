@@ -38,8 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.sync.outputs.has_new_commits }}
-      commit_hash: ${{ steps.meta.outputs.hash }}
-      commit_date: ${{ steps.meta.outputs.date }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,13 +51,6 @@ jobs:
           upstream_sync_branch: main
           target_sync_branch: main
           target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Capture commit metadata
-        id: meta
-        if: steps.sync.outputs.has_new_commits == 'true'
-        run: |
-          echo "hash=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-          echo "date=$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H-%M' HEAD)" >> "$GITHUB_OUTPUT"
 
   render:
     needs: sync
