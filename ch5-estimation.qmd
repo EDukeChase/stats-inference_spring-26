@@ -763,3 +763,200 @@ Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} N(\mu, \sigma^2)$. Determine 
 
 ## Example 5.5.11 (cont)
 
+# 5.5.6
+
+::: {style="font-size: 250%;"}
+Minimal Sufficient Statistics
+:::
+
+## Concept
+
+A **minimal sufficient statistic** is a sufficient statistic that does not include any extraneous information needed to describe the distribution from which it comes.
+
+## Definition 5.6.1
+
+Let $X_1, X_2, \ldots, X_n$ have joint pdf $f(\stackrel{\rightarrow}{x}; \theta)$. A statistic $S$ is *minimal sufficient* for this model if
+
+- $S$ is sufficient, and
+- $S$ is a function of every other sufficient statistic for the model.
+
+## Bahadur's Theorem
+
+If $S$ is complete and sufficient, then $S$ is minimal sufficient (assuming one exists).
+
+This is true for almost any parameteric model.
+
+## Example 5.6.1 
+
+Let $X_1, X_2, \ldots, X_n$ be a random sample from the $N(0,\sigma^2)$ distribution. Determine the minimal sufficient statistic for the distribution.
+
+## Example 5.6.1 (cont)
+
+## Example 5.6.1 (cont)
+
+## Theorem 5.6.1
+
+Suppose that $X_1, X_2, \ldots, X_n$ have joint pdf $f(\stackrel{\rightarrow}{x}; \theta)$.
+
+If a statistic $T = t(\bar{X})$ has the following property:
+$$
+\frac{f(\stackrel{\rightarrow}{x}; \theta)}{f(\stackrel{\rightarrow}{y}; \theta)} \text{ is } \theta\text{-free}
+\quad \Longleftrightarrow \quad
+t(\stackrel{\rightarrow}{x}) = t(\stackrel{\rightarrow}{y}),
+$$
+then $T$ is a minimal sufficient statistic.
+
+## Example 5.6.2
+
+Let $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} N(\theta, \theta^2)$. Use Theorem 5.6.1 to determine the minimal sufficient statistics for $(\mu, \sigma^2)$.
+
+## Example 5.6.2 (cont)
+
+## Example 5.6.2 (cont)
+
+## Example 5.6.2 (cont)
+
+# 5.5.7
+
+::: {style="font-size: 250%;"}
+Ancillary Statistics and Basu's Theorem
+:::
+
+## Definition 5.7.1
+
+An **ancillary statistic** is a statistic whose distribution does not depend on any unknown parameters.
+
+E.g., if $X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} N(\mu, \sigma^2)$, with $\sigma^2$ known, then $(n-1)S^2/\sigma^2 \sim \chi^2(n-1)$ is an ancillary statistic.
+
+## More context
+
+An ancillary statistic is the antithesis to a sufficient statistic.
+
+A sufficient statistic contains all the information we need about the parameters, while an ancillary statistic contains no information about the parameters.
+
+# 5.7.1
+
+::: {style="font-size: 250%;"}
+Location Parameters and Location-Invariant Statistics
+:::
+
+## Definition 5.7.2
+
+$\theta$ is said to be a location parameter for a distribution if the pdf $f(x;\theta)$ can be written as
+$$
+f(x;\theta) = f_0(x - \theta)
+$$
+for some function $f_0$ does not depend on $\theta$.
+
+E.g., $\mu$ is a location parameter for the $N(\mu, \sigma^2)$ distribution.
+
+## Definition 5.7.3
+
+A statistic $T = t(\bar{X})$ is a location-invariant statistic if
+$$
+t(x_1 + c, x_2 + c, \ldots, x_n + c) = t(x_1, x_2, \ldots, x_n)
+$$
+for all $c \in \mathbb{R}$.
+
+## Example 5.7.1
+
+Let $X_1, X_2, \ldots, X_n$ be a random sample from any distribution. 
+
+Let $Y_i = X_i + c$ for $i = 1, 2, \ldots, n$. 
+
+
+## Theorem 5.7.1
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim}f(x;\theta)$.
+
+If $\theta$ is a location parameter and $T$ is a location-invariant statistic, then $T$ is ancillary.
+
+## Example 5.7.2
+
+Suppose that $X_1, X_2, \ldots, X_n$ is a random sample from the shifted exponential distribution with rate $1$ with pdf
+$$
+f(x;\theta) = e^{-(x-\theta)} I_{(0,\infty)}(x).
+$$
+Determine an ancillary statistic.
+
+## Example 5.7.2 (cont)
+
+## Example 5.7.2 (cont)
+
+## Example 5.7.2 (cont)
+
+
+# 5.7.2
+
+::: {style="font-size: 250%;"}
+Scale Parameters and Scale-Invariant Statistics
+:::
+
+## Definition 5.7.4
+
+$\theta$ is said to be a scale parameter for a distribution if the pdf $f(x;\theta)$ can be written as
+$$
+f(x;\theta) = \frac{1}{\theta} f_0(x/\theta)
+$$
+for some function $f_0$ that does not depend on $\theta$.
+
+$\theta$ is an inverse scale parameter if the pdf $f(x;\theta)$ can be written as
+$$
+f(x;\theta) = \theta f_0(\theta x)
+$$
+for some $f_0$.
+
+E.g., $\lambda$ is an inverse scale parameter for the $\text{Exponential}(\lambda)$ distribution.
+
+## Definition 5.7.5
+
+A statistic $T = t(\bar{X})$ is a scale-invariant statistic if
+$$
+t(c x_1, c x_2, \ldots, c x_n) = t(x_1, x_2, \ldots, x_n)
+$$
+for all $c > 0$.
+
+## Theorem 5.7.2
+
+Let $X_1, X_2, \ldots, X_n$ be a random sample from a distribution with pdf $f(x;\theta)$. If $\theta$ is a scale (or inverse scale) parameter and $T$ is a scale-invariant statistic, then $T$ is ancillary.
+
+## Example 5.7.3
+
+Suppose that $X_1, X_2, \ldots, X_n$ is a random sample from the $\text{Gamma}(2,\beta)$ distribution. Determine an ancillary statistic.
+
+## Example 5.7.3 (cont)
+
+## Example 5.7.3 (cont)
+
+# 5.7.3
+
+::: {style="font-size: 250%;"}
+Basu's Theorem
+:::
+
+## Theorem 5.7.3
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim}f(x;\theta)$.
+
+Suppose that $S$ is sufficient and $T$ is any statistic that is independent of $S$. Then $T$ is ancillary.
+
+## Basu's Theorem
+
+Let $X_1, X_2, \ldots, X_n\stackrel{i.i.d.}{\sim}f(x;\theta)$. If $S$ is complete and sufficient and $T$ is ancillary, then $S$ and $T$ are independent.
+
+## Example 5.7.4
+
+Suppose that
+$$
+X_1, X_2, \ldots, X_n \stackrel{i.i.d.}{\sim} N(\mu, \sigma^2),
+$$
+where $\sigma^2 > 0$ is known.
+
+Show that the sample mean, $\bar{X}$, is independent of the sample range $X_{(n)} - X_{(1)}$.
+
+## Example 5.7.4 (cont)
+
+## Example 5.7.4 (cont)
+
+## Example 5.7.4 (cont)
+
